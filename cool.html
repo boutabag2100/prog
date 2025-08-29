@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MacBook Interface</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      overflow: hidden;
+    }
+    .dock {
+      position: fixed;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      background: rgba(145, 138, 138, 0.7);
+      border-radius: 20px;
+      padding: 10px 30px;
+      display: flex;
+      gap: 30px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      z-index: 10;
+    }
+    .dock-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: rgba(243, 243, 243, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .dock-icon:hover {
+      transform: scale(1.15);
+      background: rgba(151, 124, 124, 0.2);
+    }
+    .chrome-window {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      max-width: 90vw;
+      height: 450px;
+      background: #fff;
+      border-radius: 10px 10px 8px 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      display: none;
+      flex-direction: column;
+      z-index: 100;
+      overflow: hidden;
+      animation: popin 0.4s;
+    }
+    @keyframes popin {
+      from { opacity: 0; transform: translateX(-50%) scale(0.8);}
+      to { opacity: 1; transform: translateX(-50%) scale(1);}
+    }
+    .chrome-titlebar {
+      height: 36px;
+      background: #f5f5f7;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid #e0e0e0;
+      cursor: move;
+      user-select: none;
+    }
+    .chrome-controls {
+      display: flex;
+      gap: 6px;
+      margin-right: 12px;
+    }
+    .chrome-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .chrome-dot.red { background: #ff5f57; }
+    .chrome-dot.yellow { background: #ffbd2e; }
+    .chrome-dot.green { background: #28c940; }
+    .chrome-content {
+      flex: 1;
+      background: #fff;
+      overflow: auto;
+      padding: 24px;
+    }
+    @media (max-width: 800px) {
+      .chrome-window { width: 98vw; height: 60vh; }
+    }
+  </style>
+</head>
+<body>
+  <!-- MacBook Menu Bar -->
+  <div id="menuBar" style="
+    position:fixed;top:0;left:0;width:100vw;height:32px;
+    background:rgba(30,30,30,0.85);color:#fff;display:flex;
+    align-items:center;z-index:1000;font-family:'Segoe UI',Arial,sans-serif;
+    font-size:15px;user-select:none;backdrop-filter:blur(8px);">
+    <div style="display:flex;align-items:center;gap:18px;padding-left:18px;">
+      <span style="font-size:20px;vertical-align:middle;">&#63743;</span>
+      <span style="font-weight:500;">Finder</span>
+      <span>Edit</span>
+      <span>View</span>
+      <span>Go</span>
+      <span>Window</span>
+      <span>Help</span>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:18px;padding-right:18px;">
+      <span title="Wi-Fi" style="font-size:18px;">&#128246;</span>
+      <span title="Battery" id="batteryIcon" style="font-size:18px;">&#128267; 98%</span>
+      <span id="menuTime" style="min-width:120px;text-align:right;"></span>
+    </div>
+  </div>
+
+  <!-- MacBook Dock -->
+  <div class="dock">
+    <!-- Chrome Icon -->
+    <div class="dock-icon" id="chromeIcon" title="Chrome">
+      <img src="https://img.icons8.com/color/96/000000/chrome--v1.png" alt="Chrome" width="48" height="48">
+    </div>
+    <!-- Finder Icon -->
+    <div class="dock-icon" title="Finder">
+      <img src="https://cdn-icons-png.flaticon.com/128/732/732197.png" alt="Finder" width="48" height="48">
+    </div>
+    <!-- Launchpad Icon -->
+    <div class="dock-icon" title="Launchpad">
+      <img src="https://img.icons8.com/color/96/000000/launchpad.png" alt="Launchpad" width="48" height="48">
+    </div>
+    <!-- Safari Icon -->
+    <div class="dock-icon" title="Safari">
+      <img src="https://img.icons8.com/color/96/000000/safari--v1.png" alt="Safari" width="48" height="48">
+    </div>
+    <!-- Mail Icon -->
+    <div class="dock-icon" title="Mail">
+      <img src="https://img.icons8.com/color/96/000000/apple-mail.png" alt="Mail" width="48" height="48">
+    </div>
+    <!-- Messages Icon -->
+    <div class="dock-icon" title="Messages">
+      <img src="https://cdn-icons-png.flaticon.com/128/668/668287.png" alt="Messages" width="48" height="48">
+    </div>
+    <!-- System Preferences Icon -->
+    <div class="dock-icon" title="System Preferences">
+      <img src="https://img.icons8.com/color/96/000000/settings--v3.png" alt="System Preferences" width="48" height="48">
+    </div>
+    <!-- Photos Icon -->
+    <div class="dock-icon" title="Photos">
+      <img src="https://cdn-icons-png.flaticon.com/128/831/831266.png" alt="Photos" width="48" height="48">
+    </div>
+    <!-- Music Icon -->
+    <div class="dock-icon" title="Music">
+      <img src="https://img.icons8.com/color/96/000000/apple-music.png" alt="Music" width="48" height="48">
+    </div>
+    <!-- Calendar Icon -->
+    <div class="dock-icon" title="Calendar">
+      <img src="https://cdn-icons-png.flaticon.com/128/831/831265.png" alt="Calendar" width="48" height="48">
+    </div>
+    <!-- Notes Icon -->
+    <div class="dock-icon" title="Notes">
+      <img src="https://cdn-icons-png.flaticon.com/128/831/831271.png" alt="Notes" width="48" height="48">
+    </div>
+  </div>
+
+  <!-- Fake Chrome Window -->
+  <div class="chrome-window" id="chromeWindow">
+    <div class="chrome-titlebar" id="chromeTitlebar">
+      <div class="chrome-controls">
+        <span class="chrome-dot red" id="chromeClose"></span>
+        <span class="chrome-dot yellow"></span>
+        <span class="chrome-dot green"></span>
+      </div>
+      <span style="font-size:15px;color:#888;">chrome://my-portfolio</span>
+    </div>
+    <div class="chrome-content">
+      <!-- Your portfolio content goes here -->
+      <h2>Welcome to My Portfolio!</h2>
+      <p>This is a preview of my work, skills, and projects. You can add more content here, like images, links, or anything you want to showcase.</p>
+      <ul>
+        <li>Project 1: <a href="https://analytical-auto-sales.online/" target="_blank">Analytical Auto Sales</a></li>
+        <li>Project 2: <a href="https://boutabag2100.github.io/Pizza-Gallery/" target="_blank">Pizza Gallery</a></li>
+        <li>Project 3: <a href="https://github.com/boutabag2100" target="_blank">More...</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Notification -->
+  <div id="siteNotification" style="
+    position:fixed;
+    top:40px;
+    right:32px;
+    background:rgba(30,30,30,0.92);
+    color:#fff;
+    padding:16px 28px;
+    border-radius:14px;
+    font-size:1.1em;
+    box-shadow:0 4px 24px rgba(0,0,0,0.18);
+    z-index:2000;
+    display:none;
+  ">
+    <span style="position:absolute;top:8px;right:12px;cursor:pointer;font-size:1.3em;" id="closeNotification" title="Close">&times;</span>
+    💡 Click the <b>Chrome</b> icon in the dock below to view my portfolio and information!
+  </div>
+
+  <script>
+    // Show Chrome window when icon is clicked
+    const chromeIcon = document.getElementById('chromeIcon');
+    const chromeWindow = document.getElementById('chromeWindow');
+    const chromeClose = document.getElementById('chromeClose');
+    const siteNotification = document.getElementById('siteNotification');
+    chromeIcon.onclick = () => {
+      chromeWindow.style.display = 'flex';
+      siteNotification.style.display = 'none'; // Hide notification when Chrome is opened
+    };
+    chromeClose.onclick = () => {
+      chromeWindow.style.display = 'none';
+    };
+
+    // Make Chrome window draggable
+    const titlebar = document.getElementById('chromeTitlebar');
+    let isDragging = false, offsetX = 0, offsetY = 0;
+    titlebar.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      const rect = chromeWindow.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      document.body.style.userSelect = 'none';
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (isDragging) {
+        chromeWindow.style.left = (e.clientX - offsetX) + 'px';
+        chromeWindow.style.top = (e.clientY - offsetY) + 'px';
+        chromeWindow.style.transform = 'none';
+      }
+    });
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+      document.body.style.userSelect = '';
+    });
+
+    // Live date/time in menu bar
+    function updateMenuTime() {
+      const now = new Date();
+      const opts = { weekday: 'short', month: 'short', day: 'numeric' };
+      const dateStr = now.toLocaleDateString(undefined, opts);
+      const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('menuTime').textContent = `${dateStr} ${timeStr}`;
+    }
+    setInterval(updateMenuTime, 1000);
+    updateMenuTime();
+
+    // Show notification on load
+    window.onload = () => {
+      siteNotification.style.display = 'block';
+    };
+
+    // Close notification
+    const closeNotification = document.getElementById('closeNotification');
+    closeNotification.onclick = () => {
+      siteNotification.style.display = 'none';
+    };
+  </script>
+</body>
+</html>
